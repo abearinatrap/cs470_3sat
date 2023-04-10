@@ -9,35 +9,33 @@ using namespace std;
 #define ull unsigned ll
 #define vull vector<ull>
 
-int check(ull state, vvi &clauses){
+int check(vvi &clauses, __uint128_t state){
+    // while bitset allows for more variables, is ~15% slower than tested with
     int numC = 0;
     for(auto c: clauses){
         int i;
-
         for(i=0;i<3;++i){
-
-            ull mask;
+            __uint128_t mask;
+            
+            int bar = abs(c[i]) - 1;
+            mask = 1 << bar;
+            mask = mask & state;
+            // if(mask){
+            //     numC++;
+            //     break;
+            // }
             if(c[i]>0){
-                mask = 1 << c[i]-1;
-                mask = mask & state;
                 if(mask!=0){
                     numC++;
                     break;
                 }
             }else {
-                mask = 1 << (-c[i])-1;
-                mask = mask & state;
                 if(mask==0){
                     numC++;
                     break;
                 }
             }
         }
-        if(i==3){
-            // clause failed
-        }
-
-        
     }
 
     return numC;
@@ -90,10 +88,12 @@ int main (int argc, char* argv[]) {
         clauses.pb(clause);
     }
     
-    //max size of 64 variables 
-    ull iterations = (ull)1 << numVariables;
-    if(numVariables==64){
-        iterations = (ull)0;
+    //max size of 128 variables 
+    __uint128_t iterations = (__uint128_t)1 << numVariables;
+
+    __uint128_t temp;
+    if(numVariables==128){
+        iterations = (__uint128_t)0;
         --iterations;
     }
 
@@ -103,8 +103,8 @@ int main (int argc, char* argv[]) {
     int maxsat = 0;
     int imax = -1;
 
-    for(ull i=0;i<iterations;++i){
-        int sat = check(i, clauses);
+    for(__uint128_t i=0;i<iterations;++i){
+        int sat = check(clauses, i);
         
         if(sat > maxsat){
             imax=i;
@@ -114,7 +114,7 @@ int main (int argc, char* argv[]) {
         if(sat >= numClauses){
             auto end = chrono::high_resolution_clock::now();
             auto duration = duration_cast<chrono::microseconds>(end - start);
-            cout << "Time: " << duration.count() << " microseconds ("<< duration_cast<chrono::milliseconds>(end - start) <<") s\n";
+            cout << "Time: " << duration.count() << " microseconds ("<< duration_cast<chrono::milliseconds>(end - start).count() <<"ms)\n";
 
             cout << "Satisfied by: \n";
             for(int j=0;j<numVariables;++j){
