@@ -9,13 +9,13 @@ using namespace std;
 #define ull unsigned ll
 #define vull vector<ull>
 
-int check(vvi &clauses, __uint128_t state){
+int check(vvi &clauses, ll state){
     // while bitset allows for more variables, is ~15% slower than tested with
     int numC = 0;
     for(auto c: clauses){
         int i;
         for(i=0;i<3;++i){
-            __uint128_t mask;
+            ll mask;
             
             int bar = abs(c[i]) - 1;
             mask = 1 << bar;
@@ -59,29 +59,22 @@ int main (int argc, char* argv[]) {
     vvi special_clauses;
 
     string line;
-
-    /*
-    const string DATA_START = "3-SAT";
-    
-    while(getline(datafile,line) && line != DATA_START){
-
-    }
-
-    if(line != DATA_START){
-        // 3 sat data not found in data file
-        return -1;
-    }
-    */
     getline(datafile, line);
-    int i;
+    
+    int i; //get number of variables
     for(i=0;i<line.size();++i){
         if(isnumber(line[i])) break;
     }
-
     string numVariablesString = line.substr(i,string::npos);
     int numVariables = stoi(numVariablesString);
+    ll iterations;
     
-    while(getline(datafile,line)){
+    if(numVariables>sizeof(iterations)*8){
+        cout << "Need to recompile with larger state datatype, current size in bits is " << sizeof(iterations)*8 << endl;
+        return -1;
+    }
+    
+    while(getline(datafile,line)){ // read clauses in
         vi clause(3);
         stringstream ss(line);
         ss >> clause[0] >> clause[1] >> clause[2];
@@ -89,11 +82,10 @@ int main (int argc, char* argv[]) {
     }
     
     //max size of 128 variables 
-    __uint128_t iterations = (__uint128_t)1 << numVariables;
+    iterations = (ll)1 << numVariables;
 
-    __uint128_t temp;
-    if(numVariables==128){
-        iterations = (__uint128_t)0;
+    if(numVariables==64){
+        iterations = (ll)0;
         --iterations;
     }
 
@@ -103,13 +95,10 @@ int main (int argc, char* argv[]) {
     int maxsat = 0;
     int imax = -1;
 
-    for(__uint128_t i=0;i<iterations;++i){
+    for(ll i=0;i<iterations;++i){
         int sat = check(clauses, i);
         
-        if(sat > maxsat){
-            imax=i;
-            maxsat=sat;
-        }
+        maxsat = max(maxsat,sat);
        //cout << i << sat << "\n";
         if(sat >= numClauses){
             auto end = chrono::high_resolution_clock::now();
@@ -118,7 +107,6 @@ int main (int argc, char* argv[]) {
 
             cout << "Satisfied by: \n";
             for(int j=0;j<numVariables;++j){
-                //cout << j+1 << ": ";
                 ull mask = 1 << j;
                 mask = mask & i;
                 if(mask==0){
@@ -126,7 +114,6 @@ int main (int argc, char* argv[]) {
                 }else{
                     cout << "1 ";
                 }
-                //cout << (mask!=0?"true":"false") <<"\n"/*(j<numVariables-1)?", ":"\n"*/;
             }
             cout << endl;
             return 0;
@@ -135,7 +122,7 @@ int main (int argc, char* argv[]) {
 
     auto end = chrono::high_resolution_clock::now();
     auto duration = duration_cast<chrono::microseconds>(end - start);
-    cout << "Time: " << duration.count() << "ms\n";
-    cout << "No solution. Max: "<<maxsat << " at " << imax << endl;
+    cout << "Time: " << duration.count() << "microseconds\n";
+    cout << "No solution. Max sat: "<<maxsat << " out of " << numClauses << endl;
     return 0;
 }
