@@ -76,10 +76,13 @@ int main (int argc, char* argv[]) {
     
     while(getline(datafile,line)){ // read clauses in
         vi clause(3);
+        if(line[0]=='$') break;
+        if(isalpha(line[0])) continue;
         stringstream ss(line);
         ss >> clause[0] >> clause[1] >> clause[2];
         clauses.pb(clause);
     }
+    datafile.close();
     
     //max size of 128 variables 
     iterations = (ll)1 << numVariables;
@@ -90,7 +93,7 @@ int main (int argc, char* argv[]) {
     }
 
     int numClauses = (int)clauses.size();
-    cout << numClauses << endl;
+    //cout << numClauses << endl;
     auto start = chrono::high_resolution_clock::now();
     int maxsat = 0;
     int imax = -1;
@@ -103,7 +106,6 @@ int main (int argc, char* argv[]) {
         if(sat >= numClauses){
             auto end = chrono::high_resolution_clock::now();
             auto duration = duration_cast<chrono::microseconds>(end - start);
-            cout << "Time: " << duration.count() << " microseconds ("<< duration_cast<chrono::milliseconds>(end - start).count() <<"ms)\n";
 
             cout << "Satisfied by: \n";
             for(int j=0;j<numVariables;++j){
@@ -115,14 +117,14 @@ int main (int argc, char* argv[]) {
                     cout << "1 ";
                 }
             }
-            cout << endl;
+            cout << endl << "Time: " << duration.count() << " microseconds ("<< duration_cast<chrono::milliseconds>(end - start).count() <<"ms)\n";
             return 0;
         }
     }
 
     auto end = chrono::high_resolution_clock::now();
     auto duration = duration_cast<chrono::microseconds>(end - start);
-    cout << "Time: " << duration.count() << "microseconds\n";
     cout << "No solution. Max sat: "<<maxsat << " out of " << numClauses << endl;
+    cout << "Time: " << duration.count() << "microseconds\n";
     return 0;
 }

@@ -1,0 +1,106 @@
+20
+8 -16 -10
+-17 -14 1
+-8 -18 -18
+-10 18 10
+7 -16 -5
+11 4 3
+-20 19 18
+-17 -16 1
+11 -18 10
+12 -12 8
+14 18 18
+19 2 -6
+-9 -11 12
+10 -2 -13
+9 -9 -14
+16 -9 10
+-5 -15 1
+-18 11 -9
+17 -14 -9
+-14 13 -12
+16 6 6
+-14 -9 -18
+6 -14 -16
+16 2 -18
+-5 -13 18
+-18 -17 3
+18 -14 1
+-6 -2 7
+-17 17 19
+10 -11 -18
+3 6 -1
+15 1 -1
+5 16 16
+2 -9 -2
+9 -13 -3
+11 -20 14
+9 8 8
+7 3 -17
+16 -5 12
+1 -7 10
+-8 12 12
+20 -8 -16
+17 16 16
+-19 -3 -9
+-9 7 15
+13 -6 6
+-20 4 2
+-1 -12 20
+5 -5 8
+13 -18 -9
+-4 -17 11
+-8 -13 -4
+-20 -18 -8
+-19 -2 13
+-10 10 17
+9 16 -13
+-15 16 16
+14 -3 13
+-19 -16 -20
+-4 -10 -13
+-18 15 -3
+-1 4 -12
+-8 -5 -19
+-12 -17 -6
+-9 -16 -10
+1 11 -17
+-17 -4 -4
+-15 -12 -5
+4 -14 5
+15 -4 -4
+$
+BRUTE FORCE output:
+Time: 223805 microseconds (223ms)
+Satisfied by: 
+1 1 1 0 1 1 1 0 1 0 0 0 0 1 0 1 1 0 0 0
+
+
+HEURISTIC output, # of iterations=n^3:
+
+Heursistic ran 1000 times:
+
+431/1000 found correct solution.
+Avg running time of solution find: 832.232 microseconds
+Avg running time of solution miss: 1855.17 microseconds
+Avg combined: 3281.4
+
+ex. 
+Solution:
+1 1 1 0 1 1 1 0 1 0 0 0 0 1 1 1 1 0 0 0
+Time: 1563 microseconds (1ms)
+
+Solution:
+1 1 1 0 1 1 1 0 1 0 0 0 0 1 0 1 1 0 0 0
+Time: 38 microseconds (0ms)
+
+No solution found in heuristic. Max sat: 60 out of 61
+No solution found in heuristic. Max sat: 60 out of 61
+No solution found in heuristic. Max sat: 59 out of 61
+No solution found in heuristic. Max sat: 59 out of 61
+
+It is clear that the heuristic is on the edge of solving this problem when it cancels and says it probably isn't solvable.
+However, the hardness of a problem cannot be computed just by the number of clauses and variables.
+
+By increasing the number of tiems checked to c*n^3, where c is the number of clauses, 
+the heuristic solves the problem 1000/1000 times, but 3.75x slower on average. It is a trade off between running time and how possbibly accurate the answer will be.

@@ -17,18 +17,41 @@ const uint64_t MAX_WAIT_TIME = 10; //what is the maximum time we will wait for t
 
 const uint32_t STATE_BIT_SIZE = 128; // number of bits in state - change if number of variables increase
 
+int MASS_RUN=1000;
+
+typedef std::shared_mutex Lock;
+typedef std::unique_lock< Lock >  WriteLock;
+typedef std::shared_lock< Lock >  ReadLock;
+
+vvi bestClauses;
+int minNum=MASS_RUN;
+
+int rmin(){
+    ReadLock r_lock(Lock);
+    return minNum;
+}
+
+void wmin(int min,vvi &c){
+    WriteLock w_lock(Lock);
+    minNum=min;
+    bestClauses = vvi(c);
+}
+
 void signalHandler( int signum ) {
     cout << "Interrupt signal (" << signum << ") received.\n";
     cout << "No solution found in heuristic." << endl;
     // cleanup and close up stuff here  
     // terminate program  
-
+    for(auto c: bestClauses){
+        for(auto n:c){
+            cout << n << " ";
+        }
+        cout << endl;
+    }
     exit(signum);  
 }
 
-int MASS_RUN=1;
-
-pair<int,ll> heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) {
+int heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) {
     // implementation of 
     auto start = chrono::high_resolution_clock::now();
 
@@ -40,9 +63,9 @@ pair<int,ll> heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) 
         state_bits[i] = rng() % 2;
     }
     */
+
+    ll num_iterations =  10 * num_vars * num_vars;  // Number of iterations to run the algorithm before checking if over time
     int numClauses = sz(clauses);
-    ll num_iterations =  numClauses * num_vars * num_vars * num_vars;  // Number of iterations to run the algorithm before checking if over time
-    
     int maxSat = 0;
     for (ll iteration = 1; iteration <= num_iterations; iteration++) {
         int unsat_clause = -1;
@@ -72,7 +95,7 @@ pair<int,ll> heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) 
             auto end = chrono::high_resolution_clock::now();
             auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
             auto minidur = chrono::duration_cast<chrono::milliseconds> (end - start);
-            if(MASS_RUN==1 or rng()%25==0){
+            if(MASS_RUN==1){
                 cout << "Solution:\n"; 
                 for(int i=0;i<num_vars;++i){
                     cout << state_bits[i] << (i==(num_vars-1)?'\n':' ');
@@ -82,7 +105,7 @@ pair<int,ll> heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) 
                 
             }
             
-            return {numClauses,duration.count()};
+            return numClauses;
         } else {
             // randomly choose variable to flip :/
             int var_to_flip = abs(clauses[unsat_clause][rng() % 3]) - 1;
@@ -92,94 +115,50 @@ pair<int,ll> heuristic_3sat(const vvi& clauses, int num_vars, vector<int> setb) 
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
     auto minidur = chrono::duration_cast<chrono::milliseconds> (end - start);
-    if(MASS_RUN == 1 || rng()%25==0){
-        cout << "No solution found in heuristic. Max sat: "<< maxSat << " out of " << numClauses << endl;
-        cout << "Time: " << duration.count() << " microseconds ("<< minidur.count() <<"ms)\n";
-    }
+    //cout << "No solution found in heuristic. Max sat: "<< maxSat << " out of " << numClauses << endl;
     //cout << duration.count() <<"\n";
-    return {maxSat,duration.count()};
+    return maxSat;
 }
 
-tuple<int,int,int> additem(vector<int> ar)
-{   
-    sort(all(ar));
-    return make_tuple(ar[0],ar[1],ar[2]);
-}
 
-int main (int argc, char* argv[]) {
-    signal(SIGINT, signalHandler);  
-    if (argc < 2){
-        // need input file
-        return -1;
-    }
-    if(argc==3){
-        MASS_RUN = stoi(argv[2]);
-    }
 
-    ifstream datafile;
-    datafile.open(argv[1]);
-    
-    if(!datafile.is_open()){
-        // error opening file
-        return -1;
-    }
 
-    string line;
-    getline(datafile, line);
-    int i;
-    for(i=0;i<line.size();++i){
-        if(isnumber(line[i])) break;
-    }
-
-    string numVariablesString = line.substr(i,string::npos);
-    int numVariables = stoi(numVariablesString);
-    if(numVariables>STATE_BIT_SIZE){
-        cout << "Need to recompile with larger state size (STATE_BIT_SIZE), current size in bits is " << STATE_BIT_SIZE << endl;
-        return -1;
-    }
-
-    vvi clauses;
-
-    map<tuple<int,int,int>,int> duplicates;
-
-    vector<int> setbits;
-
-    while(getline(datafile,line)){
-        vi clause(3);
-        if(line[0]=='$') break;
-        if(isalpha(line[0])) continue;
-        stringstream ss(line);
-        ss >> clause[0] >> clause[1] >> clause[2];
-        // this will always be true, don't add to clauses
-        if(clause[0]==-clause[1] || clause[0]==-clause[2] || -clause[1]==clause[2]) continue;
-        // if all three are same, bit must be set
-        if(clause[0]==clause[1] && clause[1]==clause[2]){
-            setbits.pb(clause[0]-1);
+int getNum(int numClauses,int numVariables, int numHard){
+    vvi clauses(numClauses,vi(3));
+    vector<int> setbits{0};
+    mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+    for(int i=0;i<numClauses;++i){
+        int v,f;
+        for(int j=0;j<2;++j){
+            v=rng() % numVariables;
+            f=rng() % 2;
+            if(f){
+                v=-v;
+            }
+            clauses[i][j] = v;
         }
-        duplicates[additem(clause)]++;
+        int v2 = rng() % numHard;
+        if (v2!=0){
+            v=rng() % numVariables;
+            f=rng() % 2;
+            if(f){
+                v=-v;
+            }
+            clauses[i][2] = v;
+        }else{
+            clauses[i][2]=v;
+        }
     }
-    datafile.close();
 
-    for(auto it : duplicates){ // go through duplicates and only add once
-        clauses.pb({get<0>(it.first),get<1>(it.first),get<2>(it.first)});
-    }
-
-    for(int i=0;i<numVariables;++i){
-        //cout << i << ": " << count[i] << endl;
-    }
+    int iters = MASS_RUN;
+    int cs = numClauses;
     int num=0;
     ll count=0;
     ll bcount=0;
-    int iters = MASS_RUN;
-    int cs = sz(clauses);
-
-    for(int i=0; i< iters; ++i){
+    for(int j=0; j< iters; ++j){
         auto d = heuristic_3sat(clauses, numVariables, setbits);
-        if(d.first==cs){
+        if(d==cs){
             num++;
-            count+=d.second;
-        }else{
-            bcount+=d.second;
         }
         /*
         if(heuristic_3sat(clauses, numVariables, setbits)==clauses.size()){
@@ -187,14 +166,35 @@ int main (int argc, char* argv[]) {
         }
         */
     }
-    if(iters != 1 ) {
-        cout << num << "/" << iters << " found solution.\n";
-        cout << "Avg running time of solution find: "<<(double)count/(num) << "\n";
-        //don't divide by zero
-        if(iters!=num) {
-            cout << "Avg running time of solution miss: " << ((double)bcount)/(iters-num) << "\n";
-            cout << "Avg combined: " << ((double)count+bcount)/(num) << "\n";
-        }
+    int minNum = rmin();
+    if(num!= 0 && num<minNum){
+        wmin(num,clauses);
+        cout << num << endl;
+        return num;
     }
     return 0;
+}
+
+int main() {
+    signal(SIGINT, signalHandler);  
+    int numVariables = 20;
+    int numClauses = 70;
+    int numHard = 14;
+    double best = 1;
+    srand(time(0));
+
+    for(int a=0;a<10'000'000;++a){
+        vector<thread> n(10,thread(getNum, numClauses,numVariables,numHard));
+        for(int i=0;i<10;++i ){
+            n[i].join();
+        }
+    }
+    
+    for(auto c: bestClauses){
+        for(auto n:c){
+            cout << n << " ";
+        }
+        cout << endl;
+    }
+    
 }
