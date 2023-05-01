@@ -66,8 +66,8 @@ To test both of these algorithms, I made [cnf_to_txt.ipynb](cnf_to_txt.ipynb) to
 
 ### <a id="t">Test cases</a> 
 Creating test cases, I found that test cases where one variable is repeated twice in the same clause could make the heuristic have to work longer and therefore fail more often. This can be seen with 
-- [3sat_awrenninger.txt](3sat_awrenninger.txt), where the heuristic running with n<sup>3</sup> iterations failed 67% of the time, but solving it 268x faster when it did. A more in-depth explanation can be found at the bottom of the test case. 20 variables, 70 clauses.
-- [3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) is a problem that takes a longer time on the heuristic to solve than normal. 4 variables, 7 clauses.
+- [3sat_awrenninger.txt](inputs/3sat_awrenninger.txt), where the heuristic running with n<sup>3</sup> iterations failed 67% of the time, but solving it 268x faster when it did. A more in-depth explanation can be found at the bottom of the test case. 20 variables, 70 clauses.
+- [3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) is a problem that takes a longer time on the heuristic to solve than normal. 4 variables, 7 clauses.
 - [inputs/input3.txt](inputs/input3.txt) is a problem that has no solution so far, but has a maximum found satisfiability of 429 out of 430 clauses. 100 variables, 430 clauses
 - [inputs/input5.txt](inputs/input5.txt) is a problem that the heuristic is able to solve in a reasonable time, that the brute force cannot. 100 variables, 430 clauses.
 
@@ -86,7 +86,7 @@ The third block determines if the edge is repeated twice in the output files - s
 
 The fourth block transforms the input file, a 3SAT input file to K-vertex cover. K-vertex cover asks if k vertices can be chosen such that they touch every edge. 
 
-[3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) mapped to vertex cover can be found at [vertexcover_awrenninger.txt](vertexcover_awrenninger.txt) 
+[3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) mapped to vertex cover can be found at [vertexcover_awrenninger.txt](vertexcover_awrenninger.txt) 
 
 A k-covering for this corresponding graph corresponds to a correct input for the 3SAT problem, and vice versa. K = n (number of variables) + 2 * m (number of clauses). Each variable and clause get their own "gadgets", which correspond to the variables. The clause vertices are linked to their corresponding variable vertex.
 
@@ -109,7 +109,7 @@ The fifth block transforms the input 3SAT file to an independent set problem. Th
 The mapping given on wikipedia and in most pictures is to the clique problem, and so I chose independent set, because while similar to clique, it is an interesting problem.
 The mapping to independent set also uses gadgets, the same gadget for clauses. However, the edges that are connected are from the clauses to each other. Each vertex is connected to their complementary labels, if they exist.
 
-[3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) mapped to independent set can be found at [independentset_awrenninger.txt](independentset_awrenninger.txt) 
+[3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) mapped to independent set can be found at [independentset_awrenninger.txt](independentset_awrenninger.txt) 
 
 (X or Y or Z) and (X or Y or -Z) and (-X or Y or Z) corresponds to
 ![independent set example](images/image4.png)
