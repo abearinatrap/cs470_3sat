@@ -429,3 +429,7 @@
 -48 -68 -81
 -72 10 -6
 62 93 -34
+$
+solution possible
+very hard for brute force
+Takes <1 minute for heuristic

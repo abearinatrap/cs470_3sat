@@ -27,6 +27,7 @@ y<sub>3</sub>= 0/false <br>
 - [heuristic.cpp](heuristic.cpp) this is the code for the heuristic 3SAT algorithm.
 - [mappings.ipynb](mappings.ipynb) this is the code for the mappings - 3SAT to vertex cover and 3SAT to independent set
 - The [test cases/input files](#t) are described below and in the files themselves
+- *.tar.gz are 3SAT CNF files that need to be converted into our format using [cnf_to_txt.ipynb](cnf_to_txt.ipynb)
 
 ## Getting started
 ### **Installation**
