@@ -34,7 +34,7 @@ y<sub>3</sub>= 0/false <br>
 - In order to run the 3-Sat solvers, g++ and make are needed. On Windows, this can be done through [WSL](https://okunhardt.github.io/documents/Installing_WSL.pdf), or Cygwin. 
 - On MacOS, g++ is symlinked to clang by default. If you install g++ through [homebrew](https://docs.brew.sh/Installation) (brew install gcc), you will have to relink that.
 - On Ubuntu/debian based linux, run "sudo apt install build-essential".
-- In order to run the mappings, [Python3](https://www.python.org/downloads/), as well as a python notebook kernel ([kernel only](https://ipython.readthedocs.io/en/stable/install/kernel_install.html) or [jupyter notebook](https://jupyter.org/install) or [vscode](https://code.visualstudio.com/docs/datascience/jupyter-notebooks)) must be installed. I recommend jupyter notebook for first time users.
+- In order to run the mappings, [Python3](https://www.python.org/downloads/), as well as a python notebook kernel ([kernel only](https://ipython.readthedocs.io/en/stable/install/kernel_install.html) or [jupyter notebook](https://jupyter.org/install) or [vscode](https://code.visualstudio.com/docs/datascience/jupyter-notebooks)) **must be installed**. I recommend jupyter notebook for first time users.
 
 ### **Compiling and Running**
   This project comes with a makefile. In order to compile, simply run 'make'. The heuristic can be ran as "./h.out 3SAT_INPUT.dat" and the brute force as "./b.out 3SAT_INPUT.dat"
