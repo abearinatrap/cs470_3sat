@@ -1,6 +1,7 @@
 # CS 570 NP-Complete project: 3SAT
-University of Alabama, SPR 23, Professor: Dr. Yessick
-**Andrew Renninger**
+University of Alabama, SPR 23 <br> Professor: Dr. Yessick
+<br>
+Submission: **Andrew Renninger**
 
 ## **Contents**
 This project contains a brute force solver for 3-Satisfiability CNF (3SAT), a heuristic solver, and multiple data files to test these solvers out. 

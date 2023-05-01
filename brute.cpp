@@ -1,7 +1,9 @@
+// Andrew Renninger, 2023, CS 570
 #include <bits/stdc++.h>
 
 using namespace std;
 
+// code reductions I normally use
 #define vi vector<int>
 #define vvi vector<vi> 
 #define pb push_back
@@ -9,16 +11,18 @@ using namespace std;
 #define ull unsigned ll
 #define vull vector<ull>
 
+// check single state to see if satisfied. returns number of clauses satisfied
 int check(vvi &clauses, ll state){
-    // while bitset allows for more variables, is ~15% slower than tested with
-    int numC = 0;
+    // while bitset allows for more variables, is ~15% slower than using long long int
+    int numSat = 0;
     for(auto c: clauses){
         int i;
         for(i=0;i<3;++i){
             ll mask;
-            
-            int bar = abs(c[i]) - 1;
-            mask = 1 << bar;
+            // number of places to go over
+            int pos = abs(c[i]) - 1;
+            mask = 1 << pos;
+            //get value of n-1th bit
             mask = mask & state;
             // if(mask){
             //     numC++;
@@ -26,24 +30,25 @@ int check(vvi &clauses, ll state){
             // }
             if(c[i]>0){
                 if(mask!=0){
-                    numC++;
+                    numSat++;
                     break;
                 }
             }else {
                 if(mask==0){
-                    numC++;
+                    numSat++;
                     break;
                 }
             }
         }
     }
 
-    return numC;
+    return numSat;
 }
 
 int main (int argc, char* argv[]) {
     if (argc != 2){
         // need input file
+        cout << "./b.out <INPUT_FILE>" << endl;
         return -1;
     }
 
@@ -52,6 +57,7 @@ int main (int argc, char* argv[]) {
     
     if(!datafile.is_open()){
         // error opening file
+        cout << "error opening file" << endl;
         return -1;
     }
 
@@ -65,6 +71,7 @@ int main (int argc, char* argv[]) {
     for(i=0;i<line.size();++i){
         if(isnumber(line[i])) break;
     }
+
     string numVariablesString = line.substr(i,string::npos);
     int numVariables = stoi(numVariablesString);
     ll iterations;
@@ -87,6 +94,7 @@ int main (int argc, char* argv[]) {
     //max size of 128 variables 
     iterations = (ll)1 << numVariables;
 
+    //get number of iterations to run for
     if(numVariables==64){
         iterations = (ll)0;
         --iterations;
@@ -98,6 +106,7 @@ int main (int argc, char* argv[]) {
     int maxsat = 0;
     int imax = -1;
 
+    //iterate through all possible inputs and test
     for(ll i=0;i<iterations;++i){
         int sat = check(clauses, i);
         
@@ -122,6 +131,7 @@ int main (int argc, char* argv[]) {
         }
     }
 
+    // no solutions
     auto end = chrono::high_resolution_clock::now();
     auto duration = duration_cast<chrono::microseconds>(end - start);
     cout << "No solution. Max sat: "<<maxsat << " out of " << numClauses << endl;
