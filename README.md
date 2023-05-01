@@ -34,7 +34,7 @@ y<sub>3</sub>= 0/false <br>
 - In order to run the 3-Sat solvers, g++ and make are needed. On Windows, this can be done through [WSL](https://okunhardt.github.io/documents/Installing_WSL.pdf), or Cygwin. 
 - On MacOS, g++ is symlinked to clang by default. If you install g++ through [homebrew](https://docs.brew.sh/Installation) (brew install gcc), you will have to relink that.
 - On Ubuntu/debian based linux, run "sudo apt install build-essential".
-- In order to run the mappings, [Python3](https://www.python.org/downloads/), as well as a python notebook kernel ([kernel only](https://ipython.readthedocs.io/en/stable/install/kernel_install.html) or [jupyter notebook](https://jupyter.org/install) or [vscode](https://code.visualstudio.com/docs/datascience/jupyter-notebooks)) must be installed. I recommend jupyter notebook for first time users.
+- In order to run the mappings, [Python3](https://www.python.org/downloads/), as well as a python notebook kernel ([kernel only](https://ipython.readthedocs.io/en/stable/install/kernel_install.html) or [jupyter notebook](https://jupyter.org/install) or [vscode](https://code.visualstudio.com/docs/datascience/jupyter-notebooks)) **must be installed**. I recommend jupyter notebook for first time users.
 
 ### **Compiling and Running**
   This project comes with a makefile. In order to compile, simply run 'make'. The heuristic can be ran as "./h.out 3SAT_INPUT.dat" and the brute force as "./b.out 3SAT_INPUT.dat"
@@ -66,8 +66,8 @@ To test both of these algorithms, I made [cnf_to_txt.ipynb](cnf_to_txt.ipynb) to
 
 ### <a id="t">Test cases</a> 
 Creating test cases, I found that test cases where one variable is repeated twice in the same clause could make the heuristic have to work longer and therefore fail more often. This can be seen with 
-- [3sat_awrenninger.txt](3sat_awrenninger.txt), where the heuristic running with n<sup>3</sup> iterations failed 67% of the time, but solving it 268x faster when it did. A more in-depth explanation can be found at the bottom of the test case. 20 variables, 70 clauses.
-- [3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) is a problem that takes a longer time on the heuristic to solve than normal. 4 variables, 7 clauses.
+- [3sat_awrenninger.txt](inputs/3sat_awrenninger.txt), where the heuristic running with n<sup>3</sup> iterations failed 67% of the time, but solving it 268x faster when it did. A more in-depth explanation can be found at the bottom of the test case. 20 variables, 70 clauses.
+- [3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) is a problem that takes a longer time on the heuristic to solve than normal. 4 variables, 7 clauses.
 - [inputs/input3.txt](inputs/input3.txt) is a problem that has no solution so far, but has a maximum found satisfiability of 429 out of 430 clauses. 100 variables, 430 clauses
 - [inputs/input5.txt](inputs/input5.txt) is a problem that the heuristic is able to solve in a reasonable time, that the brute force cannot. 100 variables, 430 clauses.
 
@@ -86,7 +86,7 @@ The third block determines if the edge is repeated twice in the output files - s
 
 The fourth block transforms the input file, a 3SAT input file to K-vertex cover. K-vertex cover asks if k vertices can be chosen such that they touch every edge. 
 
-[3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) mapped to vertex cover can be found at [vertexcover_awrenninger.txt](vertexcover_awrenninger.txt) 
+[3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) mapped to vertex cover can be found at [vertexcover_awrenninger.txt](vertexcover_awrenninger.txt) 
 
 A k-covering for this corresponding graph corresponds to a correct input for the 3SAT problem, and vice versa. K = n (number of variables) + 2 * m (number of clauses). Each variable and clause get their own "gadgets", which correspond to the variables. The clause vertices are linked to their corresponding variable vertex.
 
@@ -109,7 +109,7 @@ The fifth block transforms the input 3SAT file to an independent set problem. Th
 The mapping given on wikipedia and in most pictures is to the clique problem, and so I chose independent set, because while similar to clique, it is an interesting problem.
 The mapping to independent set also uses gadgets, the same gadget for clauses. However, the edges that are connected are from the clauses to each other. Each vertex is connected to their complementary labels, if they exist.
 
-[3sat_awrenninger_small.txt](3sat_awrenninger_small.txt) mapped to independent set can be found at [independentset_awrenninger.txt](independentset_awrenninger.txt) 
+[3sat_awrenninger_small.txt](inputs/3sat_awrenninger_small.txt) mapped to independent set can be found at [independentset_awrenninger.txt](independentset_awrenninger.txt) 
 
 (X or Y or Z) and (X or Y or -Z) and (-X or Y or Z) corresponds to
 ![independent set example](images/image4.png)
