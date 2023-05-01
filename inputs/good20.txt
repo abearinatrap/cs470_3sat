@@ -69,3 +69,5 @@
 -20 20 12
 -7 20 -11
 5 17 9
+$
+A middle hardness 3SAT problem with 20 variables.
